@@ -44,3 +44,7 @@ variable "jmeter3_url" {
   description = "URL with jmeter archive"
   default = "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-3.3.tgz" 
 }
+
+data "local_file" "cloudinit" {
+  filename = "${path.module}/cloudinit.conf"
+}

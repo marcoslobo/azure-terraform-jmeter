@@ -1,25 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-
-resource "azurerm_resource_group" "main" {
-  name     = "${var.prefix}-resources"
-  location = "${var.location}"
-}
-
-resource "azurerm_virtual_network" "main" {
-  name                = "${var.prefix}-network"
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-}
-
-resource "azurerm_subnet" "internal" {
-  name                 = "internal"
-  resource_group_name  = azurerm_resource_group.main.name
-  virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = ["10.0.2.0/24"]
-}
 
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
   name                            = "${var.prefix}-vmss"
@@ -27,19 +5,15 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
   location                        = azurerm_resource_group.main.location
   sku                             = "Standard_F2"
   instances                       = 2
-  admin_username                  = "adminuser"
-  admin_password                  = "P@ssw0rd1234!"
-  disable_password_authentication = false
-
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal-daily"
-    sku       = "20_04-daily-lts"
-    version   = "latest"
-  }
+  admin_username                  = "ubuntu"
+  disable_password_authentication = true
+  depends_on = [
+    azurerm_subnet.internal
+  ]
+  custom_data = base64encode(data.local_file.cloudinit.content)
 
   network_interface {
-    name    = "example"
+    name    = "${var.prefix}-vmms-network"
     primary = true
 
     ip_configuration {
@@ -48,9 +22,21 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
       subnet_id = azurerm_subnet.internal.id
     }
   }
+  admin_ssh_key {
+    username   = "ubuntu"
+    public_key = file("${var.master_ssh_public_key_file}")
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal-daily"
+    sku       = "20_04-daily-lts"
+    version   = "latest"
+  }
 
   os_disk {
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
 }
+
