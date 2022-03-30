@@ -98,12 +98,20 @@ resource "azurerm_linux_virtual_machine" "main" {
       "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -",
       "sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
       "sudo apt install docker-ce -y",
+      "cd /jmeter-master/",
+      "curl ${var.jmeter3_url} > jMeter.tgz",
+      "tar zxvf jMeter.tgz"
     ]
   }
 
   provisioner "file" {
     source      = "${path.module}/files"
     destination = "/jmeter-master"
+  }
+  
+  provisioner "file" {
+    source      = var.jmx_script_file
+    destination = "/jmeter-master/files/script.jmx"
   }
 
   provisioner "remote-exec" {
