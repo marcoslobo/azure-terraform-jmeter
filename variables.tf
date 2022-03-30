@@ -45,6 +45,6 @@ variable "jmeter3_url" {
   default = "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-3.3.tgz" 
 }
 
-data "local_file" "cloudinit" {
-  filename = "${path.module}/cloudinit.yml"
+data "template_file" "script" {
+  template = file("${path.module}/cloudinit.yml")
 }

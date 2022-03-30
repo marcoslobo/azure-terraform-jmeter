@@ -1,3 +1,16 @@
+data "template_cloudinit_config" "config" {
+  gzip          = true
+  base64_encode = true
+
+  # Main cloud-config configuration file.
+  part {
+    filename     = "cloud-init.yml"
+    content_type = "text/cloud-config"
+    content      = data.template_file.script.rendered
+  }
+}
+
+
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
   name                            = "${var.prefix}-vmss"
   resource_group_name             = azurerm_resource_group.main.name
