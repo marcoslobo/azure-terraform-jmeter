@@ -1,4 +1,3 @@
-
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
   name                            = "${var.prefix}-vmss"
   resource_group_name             = azurerm_resource_group.main.name
@@ -6,11 +5,14 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
   sku                             = "Standard_F2"
   instances                       = 2
   admin_username                  = "ubuntu"
-  disable_password_authentication = true
+  admin_password                  = "ronaldo123!"
+  disable_password_authentication = false
   depends_on = [
     azurerm_subnet.internal
   ]
-  custom_data = base64encode(data.local_file.cloudinit.content)
+  custom_data = data.template_cloudinit_config.config.rendered
+
+ 
 
   network_interface {
     name    = "${var.prefix}-vmms-network"

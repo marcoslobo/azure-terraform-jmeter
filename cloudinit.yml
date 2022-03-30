@@ -2,7 +2,6 @@
 package_update: true
 package_upgrade: true
 
-
 # Install packages via apt. To add packages it might be required to add additional sources above.
 packages:
  - unzip
@@ -10,16 +9,12 @@ packages:
  - wget
  - curl
  - apt-transport-https
- - software-properties-common
- - powershell
- - azure-cli
- - openjdk-8-jdk
+ - software-properties-common 
 # - npm
 # - docker.io
  #- packages-microsoft-prod
  #- dotnet-sdk-6.0
-
-
+ 
 # Install latest version of azcopy (can not be installed via apt)
 runcmd:
 # Download AzCopy and extract archive

@@ -46,5 +46,5 @@ variable "jmeter3_url" {
 }
 
 data "local_file" "cloudinit" {
-  filename = "${path.module}/cloudinit.conf"
+  filename = "${path.module}/cloudinit.yml"
 }
