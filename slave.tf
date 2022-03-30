@@ -1,15 +1,4 @@
-data "template_cloudinit_config" "config" {
-  gzip          = true
-  base64_encode = true
-
-  # Main cloud-config configuration file.
-  part {
-    filename     = "cloud-init.yml"
-    content_type = "text/cloud-config"
-    content      = data.template_file.script.rendered
-  }
-}
-
+variable "ctr_cloud_init_file" { default = "./cloudinit.yaml" }
 
 resource "azurerm_linux_virtual_machine_scale_set" "main" {
   name                            = "${var.prefix}-vmss"
@@ -23,7 +12,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "main" {
   depends_on = [
     azurerm_subnet.internal
   ]
-  custom_data = data.template_cloudinit_config.config.rendered
+ custom_data = file(pathexpand(var.ctr_cloud_init_file))
 
  
 
